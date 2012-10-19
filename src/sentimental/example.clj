@@ -7,7 +7,6 @@
 ;; Remember to load the lexicon before trying to score any data.
 (anew/load-lexicon "/path/to/sentiment/data/original-anew-la.csv")
 
-
 ;; The words are stored in a map. Word -> score
 (count @(:english anew/scores))
 ;; => 1030
@@ -30,4 +29,17 @@
 (anew/score-phrase "Odio mi pájaro, amo a mi perro. amor." :spanish)
 ;; ==> {:words ["odio" "pájaro" "perro" "amor"],
 ;;      :score {:v 6.385000109672546, :d 5.520000100135803, :a 5.507500052452087}}
+
+
+;; Compute the ANEW without knowing which language the content may be
+;; in. (Takes the 'best of the three', and returns a map with the
+;; results)
+
+(anew/score-phrase-langs
+ "Odio mi pájaro, amo a mi perro. amor. I really love my dog.")
+;; => {:v 6.385000109672546, :d 5.520000100135803, :a 5.507500052452087,
+;;     :anew-es {:words ["odio" "pájaro" "perro" "amor"],
+;;              :score {:v 6.385000109672546,
+;;                      :d 5.520000100135803,
+;;                      :a 5.507500052452087}}}
 
