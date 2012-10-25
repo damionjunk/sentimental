@@ -78,6 +78,19 @@ Generate the ANEW score for a Spanish phrase:
 ;;      :score {:v 6.385000109672546, :d 5.520000100135803, :a 5.507500052452087}}
 ```
 
+Compute the "Best of Three" match for a phrase where we're only
+interested in scoring for one language.
+
+```clojure
+(anew/score-phrase-langs
+ "Odio mi pájaro, amo a mi perro. amor. I really love my dog.")
+;; => {:v 6.385000109672546, :d 5.520000100135803, :a 5.507500052452087,
+;;     :anew-es {:words ["odio" "pájaro" "perro" "amor"],
+;;              :score {:v 6.385000109672546,
+;;                      :d 5.520000100135803,
+;;                      :a 5.507500052452087}}}
+```
+
 ## License
 
 Copyright © 2012 Damion Junk
