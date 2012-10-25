@@ -1,4 +1,4 @@
-(defproject sentimental "0.1.1-SNAPSHOT"
+(defproject sentimental "0.1.1"
   :description "Sentiment analysis tools, Lexicon Lookup Based"
   :url "http://damionjunk.com"
   :license {:name "Eclipse Public License"
