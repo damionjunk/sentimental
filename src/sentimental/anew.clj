@@ -59,6 +59,20 @@
       (catch Exception e
         (log/warn "Exception during lexicon load: " e (.getMessage e))))))
 
+(defn tokenize
+  "A wrapper around the simple regex tokenizer for 
+   cases when we get a string."
+  [text]
+  (re-seq word-re (s/lower-case text)))
+
+(defn string-or-seq
+  "Figure out whether this is a string or a sequence and 
+   return a sequence."
+  [obj]
+  (if (instance? String obj)
+    (tokenize obj)
+    ;; obj is a sequence, we hope
+    obj))
 
 (defn score-phrase
   "Scores the phrase on the ANEW 1-9 scale.
@@ -75,14 +89,13 @@
    :d is Dominance
    :v is Valence
   "
-  [phrase language]
-  (let [sphrase (re-seq word-re (s/lower-case phrase))
-        ;; We're just building a seq of scores, accounting for duplicates:
+  [tokens language]
+  (let [;; We're just building a seq of scores, accounting for duplicates:
         matches (reduce (fn [v w]
                           (if-let [scorem (get @(language scores) w)]
                             (conj v (assoc scorem :word w))
                             v))
-                        [] sphrase)
+                        [] tokens)
         ;; match count the same across all dimensions
         matchcount (count matches)]
     {:words (reduce (fn [x y] (conj x (:word y))) [] matches)
@@ -109,9 +122,9 @@
               :score {:a 0.0 :d 0.0 :v 0.0}}
    }"
   [text]
-  (let [anew-en (score-phrase text :english)
-        anew-es (score-phrase text :spanish)
-        anew-pt (score-phrase text :portuguese)
+  (let [anew-en (score-phrase (string-or-seq text) :english)
+        anew-es (score-phrase (string-or-seq text) :spanish)
+        anew-pt (score-phrase (string-or-seq text) :portuguese)
         maxscored (apply max
                          (map count
                               [(:words anew-en)
@@ -119,7 +132,7 @@
                                (:words anew-pt)]))]
     (when (> maxscored 0)
       (let [maxrecs  (into {} (filter (fn [x] (>= (count (:words (second x))) maxscored))
-                                      {:anew-en anew-en :anew-es anew-es :anew-pt anew-pt}))
+                                      {:eng anew-en :spa anew-es :por anew-pt}))
             maxrecsn (count maxrecs)
             ;; Take the maxrecs, which may be 1 to 3 elements, and
             ;; average the scores.
