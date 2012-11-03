@@ -69,7 +69,7 @@
   "Figure out whether this is a string or a sequence and 
    return a sequence."
   [obj]
-  (if (instance? String obj)
+  (if (string? obj)
     (tokenize obj)
     ;; obj is a sequence, we hope
     obj))
